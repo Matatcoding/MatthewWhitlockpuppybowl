@@ -2,16 +2,7 @@ const API_URL = "https://fsa-puppy-bowl.herokuapp.com/api/2505-Matthew";
 const $form = document.createElement("form");
 const $main = document.querySelector("main");
 const $content = document.querySelector("#content");
-const $loading = document.querySelector("#loading-screen");
 let teams = [];
-
-function showLoading() {
-  $loading.setAttribute("style", "display:flex;");
-}
-
-function hideLoading() {
-  $loading.setAttribute("style", "display:none;");
-}
 
 async function fetchAllPlayers() {
   try {
@@ -99,13 +90,10 @@ async function renderAllPlayers() {
     $detailsBtn = $player.querySelector(".details-btn");
 
     $detailsBtn.addEventListener("click", async () => {
-      showLoading();
       try {
         await renderSinglePlayer(player.id);
       } catch (err) {
         console.error(err.message);
-      } finally {
-        hideLoading();
       }
     });
 
@@ -132,13 +120,10 @@ async function renderSinglePlayer(id) {
     </section>
     `;
   $main.querySelector("#back-btn").addEventListener("click", async () => {
-    showLoading();
     try {
       await renderAllPlayers();
     } catch (err) {
       console.error(err.message);
-    } finally {
-      hideLoading();
     }
   });
 
@@ -149,13 +134,10 @@ async function renderSinglePlayer(id) {
         `Are you sure you want to remove ${player.name} from the roster?`
       );
       if (!confirmRemove) return;
-      showLoading();
       await removePlayerById(player.id);
       await renderAllPlayers();
     } catch (err) {
       console.error(err.message);
-    } finally {
-      hideLoading();
     }
   });
 }
@@ -166,8 +148,6 @@ async function init() {
     teams = await fetchAllTeams();
   } catch (err) {
     console.error(err);
-  } finally {
-    hideLoading();
   }
 }
 
@@ -177,7 +157,6 @@ $form.addEventListener("submit", async (e) => {
   const breed = document.querySelector("#new-breed").value;
   const image = document.querySelector("#new-image").value;
 
-  showLoading();
   try {
     await createPlayer(name, breed, image);
     await renderAllPlayers();
@@ -187,7 +166,6 @@ $form.addEventListener("submit", async (e) => {
     document.querySelector("#new-name").value = "";
     document.querySelector("#new-breed").value = "";
     document.querySelector("#new-image").value = "";
-    hideLoading();
   }
 });
 
