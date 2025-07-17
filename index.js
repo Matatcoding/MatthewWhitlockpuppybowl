@@ -1,6 +1,7 @@
 const API_URL = "https://fsa-puppy-bowl.herokuapp.com/api/2505-Matthew";
 const $form = document.querySelector("form");
 const $main = document.querySelector("main");
+const $content = document.querySelector("#content");
 const $loading = document.querySelector("#loading-screen");
 let teams = [];
 
@@ -85,32 +86,14 @@ async function renderAllPlayers() {
         <img src="${player.imageUrl}" alt="Picture of ${player.name}" />
         <section class="player-actions">
             <button class="details-btn">See Details</button>
-            <button class="remove-btn">Remove Player</button>
         </section>
         `;
     $detailsBtn = $player.querySelector(".details-btn");
-    $removeBtn = $player.querySelector(".remove-btn");
 
     $detailsBtn.addEventListener("click", async () => {
       showLoading();
       try {
         await renderSinglePlayer(player.id);
-      } catch (err) {
-        console.error(err.message);
-      } finally {
-        hideLoading();
-      }
-    });
-
-    $removeBtn.addEventListener("click", async () => {
-      try {
-        const confirmRemove = confirm(
-          `Are you sure you want to remove ${player.name} from the roster?`
-        );
-        if (!confirmRemove) return;
-        showLoading();
-        await removePlayerById(player.id);
-        await renderAllPlayers();
       } catch (err) {
         console.error(err.message);
       } finally {
@@ -130,18 +113,35 @@ async function renderSinglePlayer(id) {
 
   $main.innerHTML = `
     <section id="single-player">
-        <h2>${player.name}/${player.team?.name || "Unassigned"} - ${
-    player.status
-  }</h2>
-        <p>${player.breed}</p>
+        <h2>${player.name} (${player.breed}) - ${player.status}</h2>
+        <p><b>ID:</b> ${player.id}</p>
+        <p><b>Team:</b> ${player.team?.name || "Unassigned"}</p>
         <img src="${player.imageUrl}" alt="Picture of ${player.name}" />
         <button id="back-btn">Back to List</button>
+        <h3>Do you want to remove this player?</h3>
+         <button class="remove-btn">Remove Player</button>
     </section>
     `;
-
   $main.querySelector("#back-btn").addEventListener("click", async () => {
     showLoading();
     try {
+      await renderAllPlayers();
+    } catch (err) {
+      console.error(err.message);
+    } finally {
+      hideLoading();
+    }
+  });
+
+  $removeBtn = $main.querySelector(".remove-btn");
+  $removeBtn.addEventListener("click", async () => {
+    try {
+      const confirmRemove = confirm(
+        `Are you sure you want to remove ${player.name} from the roster?`
+      );
+      if (!confirmRemove) return;
+      showLoading();
+      await removePlayerById(player.id);
       await renderAllPlayers();
     } catch (err) {
       console.error(err.message);
