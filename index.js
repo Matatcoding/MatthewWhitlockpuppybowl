@@ -1,5 +1,5 @@
 const API_URL = "https://fsa-puppy-bowl.herokuapp.com/api/2505-Matthew";
-const $form = document.querySelector("form");
+const $form = document.createElement("form");
 const $main = document.querySelector("main");
 const $content = document.querySelector("#content");
 const $loading = document.querySelector("#loading-screen");
@@ -47,7 +47,6 @@ async function fetchPlayerById(id) {
   try {
     const response = await fetch(API_URL + "/players/" + id);
     const result = await response.json();
-    selectedPlayer = result.data;
     return result.data.player;
   } catch (err) {
     console.error(err.message);
@@ -68,12 +67,20 @@ async function fetchAllTeams() {
   try {
     const response = await fetch(API_URL + "/teams");
     const result = await response.json();
+    return result.data.teams;
   } catch (err) {
     console.error(err.message);
   }
 }
 
 async function renderAllPlayers() {
+  $form.innerHTML = `
+      <h2>Please enter puppy you would like to add!</h2>
+      <label>Name: <input required id="new-name" type="text" /></label>
+      <label>Breed: <input required id="new-breed" type="text" /></label>
+      <label>Image URL: <input id="new-image" type="text" /></label>
+      <button>Submit</button>
+    `;
   const playerList = await fetchAllPlayers();
   const $players = document.createElement("ul");
   $players.id = "player-list";
@@ -85,6 +92,7 @@ async function renderAllPlayers() {
         <p>${player.breed}</p>
         <img src="${player.imageUrl}" alt="Picture of ${player.name}" />
         <section class="player-actions">
+            <p> No puppy selected, would you like to select this puppy?</p>
             <button class="details-btn">See Details</button>
         </section>
         `;
@@ -105,6 +113,7 @@ async function renderAllPlayers() {
   });
 
   $main.innerHTML = "";
+  $main.appendChild($form);
   $main.appendChild($players);
 }
 
@@ -171,7 +180,7 @@ $form.addEventListener("submit", async (e) => {
   showLoading();
   try {
     await createPlayer(name, breed, image);
-    renderAllPlayers();
+    await renderAllPlayers();
   } catch (err) {
     console.error(err.message);
   } finally {
