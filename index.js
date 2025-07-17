@@ -54,16 +54,6 @@ async function removePlayerById(id) {
   }
 }
 
-async function fetchAllTeams() {
-  try {
-    const response = await fetch(API_URL + "/teams");
-    const result = await response.json();
-    return result.data.teams;
-  } catch (err) {
-    console.error(err.message);
-  }
-}
-
 async function renderAllPlayers() {
   $form.innerHTML = `
       <h2>Please enter puppy you would like to add!</h2>
@@ -145,7 +135,6 @@ async function renderSinglePlayer(id) {
 async function init() {
   try {
     await renderAllPlayers();
-    teams = await fetchAllTeams();
   } catch (err) {
     console.error(err);
   }
